@@ -1,6 +1,7 @@
 package org.openpaas.paasta.portal.common.api.domain.org;
 
 import org.openpaas.paasta.portal.common.api.domain.user.UserService;
+import org.openpaas.paasta.portal.common.api.entity.cc.OrganizationsTolCc;
 import org.openpaas.paasta.portal.common.api.entity.portal.UserDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +99,17 @@ public class OrgController {
     @DeleteMapping(V2_URL+"/orgs/{guid}/invite")
     public boolean deleteInvateUser(@PathVariable String guid, @RequestParam String userId){
         return orgService.deleteInvateUser(guid, userId);
+    }
+
+    /**
+     * 운영자포탈에서 조직의 이름을 변경한다.
+     *
+     * @param org
+     * @return Map
+     */
+    @PutMapping(V2_URL + "/organizations-admin")
+    public Map<String,Object> renameOrgForAdmin(@RequestBody OrganizationsTolCc org) {
+        return orgService.renameOrgForAdmin(org);
     }
 
 }

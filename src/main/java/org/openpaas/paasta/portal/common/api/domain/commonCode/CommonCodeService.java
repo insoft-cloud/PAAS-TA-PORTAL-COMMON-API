@@ -167,7 +167,15 @@ public class CommonCodeService {
      * @return Map(자바클래스)
      */
     public Map<String,Object> getCodeDetail(String groupid) {
-        List<CodeDetail> list = codeDetailRepository.findAllByGroupId(groupid);
+        int maxvalue = codeDetailRepository.findByMaxValue(groupid);
+        List<CodeDetail> list = codeDetailRepository.finadAllbyGroupId(groupid);
+
+        for(int i=list.size()-1; i>=0; i--) {
+            if(list.get(i).getValue2() > maxvalue){
+                list.remove(i);
+            }
+        }
+
         list.sort(Comparator.comparingInt(CodeDetail::getValue2));
         return new HashMap<String, Object>() {{
             put("list", list);

@@ -1,10 +1,12 @@
 package org.openpaas.paasta.portal.common.api.domain.org;
 
 
+import org.openpaas.paasta.portal.common.api.config.Constants;
 import org.openpaas.paasta.portal.common.api.config.JinqSource;
 import org.openpaas.paasta.portal.common.api.config.dataSource.CcConfig;
 import org.openpaas.paasta.portal.common.api.config.dataSource.PortalConfig;
 import org.openpaas.paasta.portal.common.api.entity.cc.OrganizationsCc;
+import org.openpaas.paasta.portal.common.api.entity.cc.OrganizationsTolCc;
 import org.openpaas.paasta.portal.common.api.entity.portal.InviteOrgSpace;
 import org.openpaas.paasta.portal.common.api.entity.portal.InviteUser;
 import org.openpaas.paasta.portal.common.api.repository.cc.OrgCcRepository;
@@ -23,6 +25,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -173,5 +176,18 @@ public class OrgService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public Map<String,Object> renameOrgForAdmin(OrganizationsTolCc org){
+        OrganizationsTolCc organizations = orgCcRepository.getOrg(org.getGuid());
+        organizations.setName(org.getName());
+        organizations.setUpdatedAt(new Date());
+
+        organizations = orgCcRepository.save(organizations);
+
+        return new HashMap<String, Object>() {{
+            put("RESULT", Constants.RESULT_STATUS_SUCCESS);
+        }};
+
     }
 }
