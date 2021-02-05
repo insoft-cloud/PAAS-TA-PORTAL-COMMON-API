@@ -176,7 +176,7 @@ public class EmailServiceV3 {
 
         try {
             InviteUser inviteUser = new InviteUser();
-            InviteUser user = inviteUserRepository.findById(Integer.parseInt(body.get("id").toString()));
+            InviteUser user = inviteUserRepository.findById(Integer.parseInt(body.get("id").toString())).orElse(null);
             user.setGubun(body.get("gubun").toString());
             inviteUserRepository.save(user);
 

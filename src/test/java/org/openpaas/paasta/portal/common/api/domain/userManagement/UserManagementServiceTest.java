@@ -12,13 +12,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openpaas.paasta.portal.common.api.config.JinqSource;
-import org.openpaas.paasta.portal.common.api.config.dataSource.PortalConfig;
 import org.openpaas.paasta.portal.common.api.config.dataSource.UaaConfig;
 import org.openpaas.paasta.portal.common.api.entity.portal.UserDetail;
 import org.openpaas.paasta.portal.common.api.entity.uaa.Users;
 import org.openpaas.paasta.portal.common.api.repository.portal.UserDetailRepository;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.persistence.EntityManager;

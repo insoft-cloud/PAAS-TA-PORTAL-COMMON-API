@@ -1,18 +1,17 @@
 package org.openpaas.paasta.portal.common.api.config.dataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import javax.sql.DataSource;
 import java.util.HashMap;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -30,8 +29,9 @@ public class PortalConfig {
 
     private static final Logger logger = getLogger(PortalConfig.class);
 
+    @Value("${datasource.hikari.maximum-pool-size}") int maximumPoolSize;
     @Value("${datasource.portal.driver-class-name}") String portalDriverClassName;
-    @Value("${datasource.portal.url}") String portalUrl;
+    @Value("${datasource.portal.jdbc-url}") String portalUrl;
     @Value("${datasource.portal.username}") String portalUsername;
     @Value("${datasource.portal.password}") String portalPassword;
     @Value("${jpa.hibernate.ddl-auto}") String ddlAuto;
@@ -39,16 +39,15 @@ public class PortalConfig {
 
 
     @Bean
-    public boolean loggerPrintConfig() {
-
-
+    public boolean loggerPrintConfigA() {
         logger.info("[PotalConfig]=====================================================================");
-        logger.info(portalDriverClassName+"portalDriverClassName");
-        logger.info(portalUrl+"portalUrl");
-        logger.info(portalUsername+"portalUsername");
-        logger.info(portalPassword+"portalPassword");
-        logger.info(ddlAuto+"PotalddlAuto");
-        logger.info(dialect+"Potaldialect");
+        logger.info(portalDriverClassName+" <= portalDriverClassName");
+        logger.info(portalUrl+" <= portalUrl");
+        logger.info(portalUsername+" <= portalUsername");
+        logger.info(portalPassword+" <= portalPassword");
+        logger.info(ddlAuto+" <= PotalddlAuto");
+        logger.info(dialect+" <= Potaldialect");
+        logger.info(maximumPoolSize+" <= maximumPoolSize");
         logger.info("==================================================================================");
 
 
@@ -75,13 +74,15 @@ public class PortalConfig {
 
     @Primary
     @Bean
-    public DataSource portalDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(portalDriverClassName);
-        dataSource.setUrl(portalUrl);
-        dataSource.setUsername(portalUsername);
-        dataSource.setPassword(portalPassword);
-        return dataSource;
+    public HikariDataSource portalDataSource() {
+        HikariDataSource hikariDataSource = new HikariDataSource();
+        hikariDataSource.setMaximumPoolSize(maximumPoolSize);
+        hikariDataSource.setDriverClassName(portalDriverClassName);
+        hikariDataSource.setJdbcUrl(portalUrl);
+        hikariDataSource.setUsername(portalUsername);
+        hikariDataSource.setPassword(portalPassword);
+
+        return hikariDataSource;
     }
 
     @Primary

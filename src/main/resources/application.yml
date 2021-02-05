@@ -1,12 +1,12 @@
-# Spring properties
 spring:
   application:
     name: PortalCommonApi  # Service registers under this name
   security:
     username: admin
     password: openpaasta
-
-# HTTP Server
+  main:
+    allow-bean-definition-overriding: true
+    web-application-type: none
 server:
   port: ${PORT:2223}   # HTTP (Tomcat) port
 
@@ -44,6 +44,8 @@ management:  # If you set off security...
 spring:
   profiles: local
 datasource:
+  hikari:
+    maximum-pool-size: 50
   cc:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://XXX.XXX.XXX.XXX:5524/ccdb
@@ -178,3 +180,10 @@ eureka:
     hostname: ${spring.cloud.client.hostname}
     lease-expiration-duration-in-seconds: 5
     lease-renewal-interval-in-seconds: 10
+
+logging:
+  level:
+    ROOT: INFO
+  file:
+    path: classpath:logback-spring.xml
+    name: logs/application.log

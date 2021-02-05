@@ -40,7 +40,7 @@ public class CommonCodeServiceTest {
 
     @Value("${datasource.portal.driver-class-name}")
     String portalDriverClassName;
-    @Value("${datasource.portal.url}")
+    @Value("${datasource.portal.jdbc-url}")
     String portalUrl;
     @Value("${datasource.portal.username}")
     String portalUsername;
@@ -264,7 +264,7 @@ public class CommonCodeServiceTest {
 
     @Test
     public void testUpdateCommonDetail() throws Exception {
-        when(codeDetailRepository.findOne(anyInt())).thenReturn(codeDetail);
+        when(codeDetailRepository.findById(anyInt()).orElse(null)).thenReturn(codeDetail);
         when(codeDetailRepository.save(codeDetail)).thenReturn(codeDetail);
         Map result = commonCodeService.updateCommonDetail(1, codeDetail);
         Assert.assertNotNull(result);
@@ -274,14 +274,14 @@ public class CommonCodeServiceTest {
     @Test
     public void deleteCommonGroup() throws Exception {
         when(codeDetailRepository.findByGroupId(anyString())).thenReturn(codeDetails);
-        doNothing().when(codeDetailRepository).delete(anyInt());
+        doNothing().when(codeDetailRepository).deleteById(anyInt());
         Map result = commonCodeService.deleteCommonGroup("id");
         Assert.assertNotNull(result);
     }
 
     @Test
     public void deleteCommonDetail() throws Exception {
-        doNothing().when(codeDetailRepository).delete(anyInt());
+        doNothing().when(codeDetailRepository).deleteById(anyInt());
         Map result = commonCodeService.deleteCommonDetail(1);
         Assert.assertNotNull(result);
     }

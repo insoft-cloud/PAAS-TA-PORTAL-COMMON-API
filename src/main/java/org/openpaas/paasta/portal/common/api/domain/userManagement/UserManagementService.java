@@ -6,7 +6,6 @@ import org.openpaas.paasta.portal.common.api.config.Constants;
 import org.openpaas.paasta.portal.common.api.config.JinqSource;
 import org.openpaas.paasta.portal.common.api.config.dataSource.PortalConfig;
 import org.openpaas.paasta.portal.common.api.domain.common.CommonService;
-import org.openpaas.paasta.portal.common.api.entity.cc.UsersCc;
 import org.openpaas.paasta.portal.common.api.entity.portal.UserDetail;
 import org.openpaas.paasta.portal.common.api.entity.uaa.Users;
 import org.openpaas.paasta.portal.common.api.repository.cc.UsersCcRepository;

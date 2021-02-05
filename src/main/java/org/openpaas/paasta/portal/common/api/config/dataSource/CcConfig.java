@@ -1,17 +1,16 @@
 package org.openpaas.paasta.portal.common.api.config.dataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import javax.sql.DataSource;
 import java.util.HashMap;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -29,8 +28,9 @@ public class CcConfig {
 
     private static final Logger logger = getLogger(CcConfig.class);
 
+    @Value("${datasource.hikari.maximum-pool-size}") int maximumPoolSize;
     @Value("${datasource.cc.driver-class-name}") String ccDriverClassName;
-    @Value("${datasource.cc.url}") String ccUrl;
+    @Value("${datasource.cc.jdbc-url}") String ccUrl;
     @Value("${datasource.cc.username}") String ccUsername;
     @Value("${datasource.cc.password}") String ccPassword;
     @Value("${jpa.hibernate.ddl-auto}") String ddlAuto;
@@ -38,15 +38,16 @@ public class CcConfig {
 
 
     @Bean
-    public boolean loggerPrintConfig() {
+    public boolean loggerPrintConfigB() {
 
         logger.info("[CcConfig]=======================================================================");
-        logger.info(ccDriverClassName+"ccDriverClassName");
-        logger.info(ccUrl+"ccUrl");
-        logger.info(ccUsername+"ccUsername");
-        logger.info(ccPassword+"ccPassword");
-        logger.info(ddlAuto+"CcddlAuto");
-        logger.info(dialect+"Ccdialect");
+        logger.info(ccDriverClassName+" <= ccDriverClassName");
+        logger.info(ccUrl+" <= ccUrl");
+        logger.info(ccUsername+" <= ccUsername");
+        logger.info(ccPassword+" <= ccPassword");
+        logger.info(ddlAuto+" <= CcddlAuto");
+        logger.info(dialect+" <= Ccdialect");
+        logger.info(maximumPoolSize+" <= maximumPoolSize");
         logger.info("==================================================================================");
         return true;
     }
@@ -69,14 +70,15 @@ public class CcConfig {
     }
 
     @Bean
-    public DataSource ccDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(ccDriverClassName);
-        dataSource.setUrl(ccUrl);
-        dataSource.setUsername(ccUsername);
-        dataSource.setPassword(ccPassword);
+    public HikariDataSource ccDataSource() {
+        HikariDataSource hikariDataSource = new HikariDataSource();
+        hikariDataSource.setMaximumPoolSize(maximumPoolSize);
+        hikariDataSource.setDriverClassName(ccDriverClassName);
+        hikariDataSource.setJdbcUrl(ccUrl);
+        hikariDataSource.setUsername(ccUsername);
+        hikariDataSource.setPassword(ccPassword);
 
-        return dataSource;
+        return hikariDataSource;
     }
 
     @Bean

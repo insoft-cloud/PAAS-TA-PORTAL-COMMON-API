@@ -244,7 +244,7 @@ public class CommonCodeService {
      */
     public Map<String,Object> updateCommonDetail(int no, CodeDetail codeDetail) {
         String resultStr = Constants.RESULT_STATUS_SUCCESS;
-        CodeDetail update=codeDetailRepository.findOne(no);
+        CodeDetail update=codeDetailRepository.findById(no).get();
 
         codeDetail.setGroupId(update.getGroupId());
         codeDetail.setCreated(update.getCreated());
@@ -265,7 +265,7 @@ public class CommonCodeService {
     public Map<String,Object> deleteCommonGroup(String id) {
         List<CodeDetail> codeDetailList =  codeDetailRepository.findByGroupId(id);
         for (CodeDetail codeDetail: codeDetailList) {
-            codeDetailRepository.delete(codeDetail.getNo());
+            codeDetailRepository.deleteById(codeDetail.getNo());
         }
 
         CodeGroup codeGroup = new CodeGroup();
@@ -284,7 +284,7 @@ public class CommonCodeService {
      * @return Map(자바클래스)
      */
     public Map<String,Object> deleteCommonDetail(int no) {
-        codeDetailRepository.delete(no);
+        codeDetailRepository.deleteById(no);
         return new HashMap<String, Object>() {{
             put("RESULT", Constants.RESULT_STATUS_SUCCESS);
         }};

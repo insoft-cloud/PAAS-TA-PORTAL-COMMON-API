@@ -56,7 +56,7 @@ public class CatalogService {
      */
     public Map<String, Object> getStarterCatalog(int no) {
         logger.info("" + no);
-        StarterCategory starterCategory = starterCategoryRepository.findOne(no);
+        StarterCategory starterCategory = starterCategoryRepository.findByNo(no);
         try {
             //기존 스타터 서비스 릴레이션 가져오기
             List<Integer> ssrIntList = new ArrayList<>();
@@ -410,7 +410,7 @@ public class CatalogService {
             List<StarterServicepackRelation> ssrList = starterServicePackRelationRepository.findByStarterCatalogNo(param.getNo());
             for (StarterServicepackRelation ssr : ssrList) {
                 logger.info("ssrList " + ssr.toString());
-                starterServicePackRelationRepository.delete(ssr.getNo());
+                starterServicePackRelationRepository.deleteById(ssr.getNo());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -421,7 +421,7 @@ public class CatalogService {
             List<StarterBuildpackRelation> sbrList = starterBuildPackRelationRepository.findByStarterCatalogNo(param.getNo());
             for (StarterBuildpackRelation sbr : sbrList) {
                 logger.info("sbrList " + sbr.toString());
-                starterBuildPackRelationRepository.delete(sbr.getNo());
+                starterBuildPackRelationRepository.deleteById(sbr.getNo());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -467,7 +467,7 @@ public class CatalogService {
     public Map<String, Object> updateBuildPackCatalog(BuildpackCategory param) {
         logger.info("updateBuildPackCatalog :: " + param.toString());
 
-        BuildpackCategory update = buildpackCategoryRepository.findOne(param.getNo());
+        BuildpackCategory update = buildpackCategoryRepository.findByNo(param.getNo());
         param.setCreated(update.getCreated());
         param.setLastmodified(new Date());
         BuildpackCategory buildpackCategory = buildpackCategoryRepository.save(param);
@@ -486,7 +486,7 @@ public class CatalogService {
     public Map<String, Object> updateServicePackCatalog(ServicepackCategory param) {
         logger.info("updateServicePackCatalog :: " + param.toString());
         int no = param.getNo();
-        ServicepackCategory update = servicepackCategoryRepository.findOne(no);
+        ServicepackCategory update = servicepackCategoryRepository.findByNo(no);
         param.setCreated(update.getCreated());
         param.setLastmodified(new Date());
         param.setParameter(jsonCheck(param.getParameter()));
@@ -514,7 +514,7 @@ public class CatalogService {
             List<StarterServicepackRelation> ssrList = starterServicePackRelationRepository.findByStarterCatalogNo(no);
             for (StarterServicepackRelation ssr : ssrList) {
                 logger.info("ssrList " + ssr.toString());
-                starterServicePackRelationRepository.delete(ssr.getNo());
+                starterServicePackRelationRepository.deleteById(ssr.getNo());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -525,14 +525,14 @@ public class CatalogService {
             List<StarterBuildpackRelation> sbrList = starterBuildPackRelationRepository.findByStarterCatalogNo(no);
             for (StarterBuildpackRelation sbr : sbrList) {
                 logger.info("sbrList " + sbr.toString());
-                starterBuildPackRelationRepository.delete(sbr.getNo());
+                starterBuildPackRelationRepository.deleteById(sbr.getNo());
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
 
-        starterCategoryRepository.delete(no);
+        starterCategoryRepository.deleteById(no);
         return new HashMap<String, Object>() {{
             put("RESULT", Constants.RESULT_STATUS_SUCCESS);
         }};
@@ -546,7 +546,7 @@ public class CatalogService {
      */
     public Map<String, Object> deleteBuildPackCatalog(int no) {
         logger.info("deleteBuildPackCatalog :: " + no);
-        buildpackCategoryRepository.delete(no);
+        buildpackCategoryRepository.deleteById(no);
         return new HashMap<String, Object>() {{
             put("RESULT", Constants.RESULT_STATUS_SUCCESS);
         }};
@@ -560,7 +560,7 @@ public class CatalogService {
      */
     public Map<String, Object> deleteServicePackCatalog(int no) {
         logger.info("deleteServicePackCatalog :: " + no);
-        servicepackCategoryRepository.delete(no);
+        servicepackCategoryRepository.deleteById(no);
         return new HashMap<String, Object>() {{
             put("RESULT", Constants.RESULT_STATUS_SUCCESS);
         }};

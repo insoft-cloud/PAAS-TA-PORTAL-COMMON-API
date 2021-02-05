@@ -19,14 +19,14 @@ public class RootController {
     //////////////////////////////////////////////////////////////////////
     @Value("${datasource.uaa.driver-class-name}")
     String uaaDriverClassName;
-    @Value("${datasource.uaa.url}")
+    @Value("${datasource.uaa.jdbc-url}")
     String uaaUrl;
     @Value("${datasource.uaa.username}")
     String uaaUsername;
 
     @Value("${datasource.portal.driver-class-name}")
     String portalDriverClassName;
-    @Value("${datasource.portal.url}")
+    @Value("${datasource.portal.jdbc-url}")
     String portalUrl;
     @Value("${datasource.portal.username}")
     String portalUsername;
@@ -34,7 +34,7 @@ public class RootController {
 
     @Value("${datasource.cc.driver-class-name}")
     String ccDriverClassName;
-    @Value("${datasource.cc.url}")
+    @Value("${datasource.cc.jdbc-url}")
     String ccUrl;
     @Value("${datasource.cc.username}")
     String ccUsername;

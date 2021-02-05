@@ -1,17 +1,16 @@
 package org.openpaas.paasta.portal.common.api.config.dataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import javax.sql.DataSource;
 import java.util.HashMap;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -29,8 +28,9 @@ public class UaaConfig {
 
     private static final Logger logger = getLogger(UaaConfig.class);
 
+    @Value("${datasource.hikari.maximum-pool-size}") int maximumPoolSize;
     @Value("${datasource.uaa.driver-class-name}") String uaaDriverClassName;
-    @Value("${datasource.uaa.url}") String uaaUrl;
+    @Value("${datasource.uaa.jdbc-url}") String uaaUrl;
     @Value("${datasource.uaa.username}") String uaaUsername;
     @Value("${datasource.uaa.password}") String uaaPassword;
     @Value("${jpa.hibernate.ddl-auto}") String ddlAuto;
@@ -38,15 +38,16 @@ public class UaaConfig {
 
 
     @Bean
-    public boolean loggerPrintConfig() {
+    public boolean loggerPrintConfigC() {
 
         logger.info("[UaaConfig]=======================================================================");
-        logger.info(uaaDriverClassName+"uaaDriverClassName");
-        logger.info(uaaUrl+"uaaUrl");
-        logger.info(uaaUsername+"uaaUsername");
-        logger.info(uaaPassword+"uaaPassword");
-        logger.info(ddlAuto+"UaaAuto");
-        logger.info(dialect+"Uaadialect");
+        logger.info(uaaDriverClassName+" <= uaaDriverClassName");
+        logger.info(uaaUrl+" <= uaaUrl");
+        logger.info(uaaUsername+" <= uaaUsername");
+        logger.info(uaaPassword+" <= uaaPassword");
+        logger.info(ddlAuto+" <= UaaAuto");
+        logger.info(dialect+" <= Uaadialect");
+        logger.info(maximumPoolSize+" <= maximumPoolSize");
         logger.info("==================================================================================");
 
         return true;
@@ -70,14 +71,15 @@ public class UaaConfig {
     }
 
     @Bean
-    public DataSource uaaDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(uaaDriverClassName);
-        dataSource.setUrl(uaaUrl);
-        dataSource.setUsername(uaaUsername);
-        dataSource.setPassword(uaaPassword);
+    public HikariDataSource uaaDataSource() {
+        HikariDataSource hikariDataSource = new HikariDataSource();
+        hikariDataSource.setMaximumPoolSize(maximumPoolSize);
+        hikariDataSource.setDriverClassName(uaaDriverClassName);
+        hikariDataSource.setJdbcUrl(uaaUrl);
+        hikariDataSource.setUsername(uaaUsername);
+        hikariDataSource.setPassword(uaaPassword);
 
-        return dataSource;
+        return hikariDataSource;
     }
 
     @Bean
