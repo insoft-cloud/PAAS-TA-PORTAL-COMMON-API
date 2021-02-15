@@ -7,6 +7,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("io.spring.gradle:dependency-management-plugin:1.0.11.RELEASE")
     }
 }
 
@@ -44,6 +45,8 @@ dependencyManagement {
 }
 
 dependencies {
+    compile ('org.springframework.boot:spring-boot-starter-web')
+
     //Server Security
     compile ('org.springframework.boot:spring-boot-starter-security')
 

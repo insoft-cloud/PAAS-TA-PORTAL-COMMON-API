@@ -248,7 +248,7 @@ public class UserServiceTest {
     public void testDeleteUserInfra() throws Exception {
 
         when(commonService.procCfApiRestTemplate(any(), any(), any(), any())).thenReturn(thenReturnMap);
-        when(usersRepository.findById(any())).thenReturn(new Users());
+        when(usersRepository.findById((String) any())).thenReturn(new Users());
         Map result = userService.deleteUserInfra("guid", "token");
         Assert.assertEquals(thenReturnMap, result);
     }

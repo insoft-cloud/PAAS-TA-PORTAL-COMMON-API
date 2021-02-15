@@ -1,6 +1,6 @@
 package org.openpaas.paasta.portal.common.api.domain.catalog;
 
-import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.collections4.map.HashedMap;
 import org.jinq.orm.stream.JinqStream;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -431,7 +431,7 @@ public class CatalogServiceTest {
     @Test
     public void testGetStarterCatalog() throws Exception {
 
-        when(starterCategoryRepository.findOne(anyInt())).thenReturn(starterCategory);
+        when(starterCategoryRepository.findByNo(anyInt())).thenReturn(starterCategory);
         when(starterServicePackRelationRepository.findByStarterCatalogNo(anyInt())).thenReturn(starterServicepackRelations);
 
         Map<String, Object> result = catalogService.getStarterCatalog(1);
@@ -603,9 +603,9 @@ public class CatalogServiceTest {
         int no = 0;
 
         when(starterCategoryRepository.save(starterCategory)).thenReturn(starterCategory);
-        doNothing().when(starterServicePackRelationRepository).delete(anyInt());
-        doNothing().when(starterServicePackRelationRepository).delete(anyInt());
-        doNothing().when(starterBuildPackRelationRepository).delete(anyInt());
+        doNothing().when(starterServicePackRelationRepository).deleteById(anyInt());
+        doNothing().when(starterServicePackRelationRepository).deleteById(anyInt());
+        doNothing().when(starterBuildPackRelationRepository).deleteById(anyInt());
         when(starterServicePackRelationRepository.save(starterServicepackRelation)).thenReturn(starterServicepackRelation);
         when(starterBuildPackRelationRepository.save(starterBuildpackRelation)).thenReturn(starterBuildpackRelation);
 
@@ -617,7 +617,7 @@ public class CatalogServiceTest {
     @Test
     public void testUpdateBuildPackCatalog() throws Exception {
 
-        when(buildpackCategoryRepository.findOne(buildpackCategory.getNo())).thenReturn(buildpackCategory);
+        when(buildpackCategoryRepository.findByNo(buildpackCategory.getNo())).thenReturn(buildpackCategory);
         when(buildpackCategoryRepository.save(buildpackCategory)).thenReturn(buildpackCategory);
 
 
@@ -627,7 +627,7 @@ public class CatalogServiceTest {
 
     @Test
     public void testUpdateServicePackCatalog() throws Exception {
-        when(servicepackCategoryRepository.findOne(anyInt())).thenReturn(servicepackCategory);
+        when(servicepackCategoryRepository.findByNo(anyInt())).thenReturn(servicepackCategory);
         when(servicepackCategoryRepository.save(servicepackCategory)).thenReturn(servicepackCategory);
 
 
@@ -641,11 +641,11 @@ public class CatalogServiceTest {
 
         //기존 스타터서비스 릴레이션 삭제
         when(starterServicePackRelationRepository.findByStarterCatalogNo(anyInt())).thenReturn(starterServicepackRelations);
-        doNothing().when(starterServicePackRelationRepository).delete(starterBuildpackRelation.getNo());
+        doNothing().when(starterServicePackRelationRepository).deleteById(starterBuildpackRelation.getNo());
         when(starterBuildPackRelationRepository.findByStarterCatalogNo(starterBuildpackRelation.getNo())).thenReturn(starterBuildpackRelations);
-        doNothing().when(starterBuildPackRelationRepository).delete(starterBuildpackRelation.getNo());
+        doNothing().when(starterBuildPackRelationRepository).deleteById(starterBuildpackRelation.getNo());
 
-        doNothing().when(starterCategoryRepository).delete(starterCategory.getNo());
+        doNothing().when(starterCategoryRepository).deleteById(starterCategory.getNo());
 
 
         Map<String, Object> result = catalogService.deleteStarterCatalog(1);
@@ -654,7 +654,7 @@ public class CatalogServiceTest {
 
     @Test
     public void testDeleteBuildPackCatalog() throws Exception {
-        doNothing().when(buildpackCategoryRepository).delete(1);
+        doNothing().when(buildpackCategoryRepository).deleteById(1);
 
         Map<String, Object> result = catalogService.deleteBuildPackCatalog(1);
         Assert.assertEquals(deleteBuildPackCatalogResultMap, result);
@@ -662,7 +662,7 @@ public class CatalogServiceTest {
 
     @Test
     public void testDeleteServicePackCatalog() throws Exception {
-        doNothing().when(servicepackCategoryRepository).delete(1);
+        doNothing().when(servicepackCategoryRepository).deleteById(1);
 
         Map<String, Object> result = catalogService.deleteServicePackCatalog(1);
         Assert.assertEquals(deleteServicePackCatalogResultMap, result);

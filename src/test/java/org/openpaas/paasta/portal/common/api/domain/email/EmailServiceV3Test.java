@@ -1,7 +1,5 @@
 package org.openpaas.paasta.portal.common.api.domain.email;
 
-import org.apache.commons.collections.functors.ExceptionClosure;
-import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -21,8 +19,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**

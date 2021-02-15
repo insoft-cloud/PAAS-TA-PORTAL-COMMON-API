@@ -1,6 +1,6 @@
 package org.openpaas.paasta.portal.common.api.domain.adminMain;
 
-import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.collections4.map.HashedMap;
 import org.jinq.jpa.JinqJPAStreamProvider;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
