@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -61,14 +62,21 @@ public class UserManagementService {
      */
     public Map<String, Object> getUserInfoList(String filter, UserDetail detail) {
 
-        JinqStream<Users> userStream = jinqSource.streamAllUAA(Users.class);
-        JinqStream<UserDetail> streams = jinqSource.streamAllPortal(UserDetail.class);
+//        JinqStream<Users> userStream = jinqSource.streamAllUAA(Users.class);
+    	Stream<Users> userStream = usersRepository.findAll().stream();
+//        JinqStream<UserDetail> streams = jinqSource.streamAllPortal(UserDetail.class);
+    	Stream<UserDetail> streams = userDetailRepository.findAll().stream();
         if(filter.equals("All"))
-        streams = streams.sortedDescendingBy(c -> c.getUserName());
+//        	streams = streams.sortedDescendingBy(c -> c.getUserName());
+        	streams = streams.sorted(Comparator.comparing(UserDetail::getUserName).reversed());
+        
 
-        List<UserDetail> userDetailList = streams.toList();
-        userStream = userStream.sortedBy(user -> user.getUserName());
-        userStream = userStream.sortedBy(user -> user.getActive());
+//        List<UserDetail> userDetailList = streams.toList();
+        List<UserDetail> userDetailList = streams.collect(Collectors.toList());;
+//        userStream = userStream.sortedBy(user -> user.getUserName());
+        userStream = userStream.sorted(Comparator.comparing(Users::getUserName));
+//        userStream = userStream.sortedBy(user -> user.getActive());
+        userStream = userStream.sorted(Comparator.comparing(Users::getActive));
         List<UserDetail> userDetailLists = new ArrayList<UserDetail>();
         String searchKeyword = detail.getSearchKeyword();
         userStream.forEach(user -> {
@@ -128,11 +136,14 @@ public class UserManagementService {
     }
 
     public Map<String, Object> getUserInfo(String userid) {
-        JinqStream<UserDetail> streams = jinqSource.streamAllPortal(UserDetail.class);
+//        JinqStream<UserDetail> streams = jinqSource.streamAllPortal(UserDetail.class);
+        Stream<UserDetail> streams = userDetailRepository.findAll().stream();
         if (null != userid && !"".equals(userid)) {
-            streams = streams.where(d -> d.getUserId().equals(userid));
+//            streams = streams.where(d -> d.getUserId().equals(userid));
+            streams = streams.filter(user -> userid.equals(user.getUserId()));
         }
-        List<UserDetail> userDetailList = streams.toList();
+//        List<UserDetail> userDetailList = streams.cotoList();
+        List<UserDetail> userDetailList = streams.collect(Collectors.toList());
 
         return new HashMap<String, Object>() {{
             put("list", setUserGuid(userDetailList));

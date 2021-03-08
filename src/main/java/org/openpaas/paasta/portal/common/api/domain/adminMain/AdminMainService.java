@@ -7,16 +7,20 @@ import org.openpaas.paasta.portal.common.api.config.dataSource.CcConfig;
 import org.openpaas.paasta.portal.common.api.entity.cc.OrganizationsCc;
 import org.openpaas.paasta.portal.common.api.entity.cc.OrganizationsTolCc;
 import org.openpaas.paasta.portal.common.api.entity.cc.SpacesCc;
+import org.openpaas.paasta.portal.common.api.repository.cc.OrgCcRepository;
 import org.openpaas.paasta.portal.common.api.repository.cc.SpacesCcRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by indra on 2018-02-12.
@@ -32,6 +36,9 @@ public class AdminMainService {
 
     @Autowired
     JinqSource jinqSource;
+    
+    @Autowired
+    OrgCcRepository orgCcRepository;
 
     public Map<String, Object>getTotalCountList() {
         JinqStream<OrganizationsCc> streams = jinqSource.streamAllCc(OrganizationsCc.class);
@@ -48,8 +55,11 @@ public class AdminMainService {
         }};
     }
     public Map<String, Object>getTotalOrganizationList() {  //Map<String, Object> reqParam
-        JinqStream<OrganizationsTolCc> streams = jinqSource.streamAllCc(OrganizationsTolCc.class);
-        streams = streams.sortedBy(c -> c.getId());
+//        JinqStream<OrganizationsTolCc> streams = jinqSource.streamAllCc(OrganizationsTolCc.class);
+    	Stream<OrganizationsTolCc> streams = orgCcRepository.findAll().stream();
+    	
+//        streams = streams.sortedBy(c -> c.getId());
+        streams = streams.sorted(Comparator.comparing(OrganizationsTolCc::getId));
         List<Map<String, Object>> resultList = streams.map(x -> new HashMap<String, Object>(){{
             put("organizationId", x.getId());
             put("organizationName", x.getName());

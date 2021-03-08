@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -42,22 +43,27 @@ public class CommonCodeService {
      * @return Map(자바클래스)
      */
     public Map<String, Object> getCommonCodeDetail(CodeDetail codeDetail) {
-        JinqStream<CodeDetail> streams = jinqSource.streamAllPortal(CodeDetail.class);
+//        JinqStream<CodeDetail> streams = jinqSource.streamAllPortal(CodeDetail.class);
+        Stream<CodeDetail> streams = codeDetailRepository.findAll().stream();
         int no = codeDetail.getNo();
         String groudId = codeDetail.getGroupId();
         String key = codeDetail.getKey();
         if (0 != no) {
-            streams = streams.where(c -> c.getNo() == no);
+//            streams = streams.where(c -> c.getNo() == no);
+        	streams = streams.filter(code -> code.getNo() == no);
         }
 
         if (null != key && !"".equals(key) && !"null".equals(key.toLowerCase())) {
-            streams = streams.where(c -> c.getKey().equals(key));
+//            streams = streams.where(c -> c.getKey().equals(key));
+        	streams = streams.filter(code -> key.equals(code.getKey()));
         }
         if (null != groudId && !"".equals(groudId) && !"null".equals(groudId.toLowerCase())) {
-            streams = streams.where(c -> c.getGroupId().equals(groudId));
+//            streams = streams.where(c -> c.getGroupId().equals(groudId));
+            streams = streams.filter(code -> groudId.equals(code.getGroupId()));
         }
 
-        streams = streams.sortedBy(c -> c.getOrder());
+//        streams = streams.sortedBy(c -> c.getOrder());
+        streams = streams.sorted(Comparator.comparing(CodeDetail::getOrder));
 
         List<Map<String, Object>> resultList = streams.map(x -> new HashMap<String, Object>() {{
             put("no", x.getNo());
@@ -85,22 +91,26 @@ public class CommonCodeService {
     public Map<String, Object> getCommonCodeJoinGroup(CodeDetail codeDetail, CodeGroup codeGroup) {
 
         //공통코드 상세 조회를 한다. ::  공통코드 상세 개수를 조회한다.
-        JinqStream<CodeDetail> codeDetailJinqStream = jinqSource.streamAllPortal(CodeDetail.class);
+//        JinqStream<CodeDetail> codeDetailJinqStream = jinqSource.streamAllPortal(CodeDetail.class);
+        Stream<CodeDetail> codeDetailStream = codeDetailRepository.findAll().stream();
 
         String key = codeDetail.getKey();
         String GroupId = codeDetail.getGroupId();
 
         if (null != key && !"".equals(key)) {
-            codeDetailJinqStream = codeDetailJinqStream.where(c -> c.getKey().equals(key));
+//            codeDetailJinqStream = codeDetailJinqStream.where(c -> c.getKey().equals(key));
+        	codeDetailStream = codeDetailStream.filter(code -> key.equals(code.getKey()));
         }
 
         if (null != GroupId && !"".equals(GroupId)) {
-            codeDetailJinqStream = codeDetailJinqStream.where(c -> c.getGroupId().equals(GroupId));
+//            codeDetailJinqStream = codeDetailJinqStream.where(c -> c.getGroupId().equals(GroupId));
+            codeDetailStream = codeDetailStream.filter(code -> GroupId.equals(code.getGroupId()));
         }
 
-        codeDetailJinqStream = codeDetailJinqStream.sortedBy(c -> c.getOrder());
+//        codeDetailJinqStream = codeDetailJinqStream.sortedBy(c -> c.getOrder());
+        codeDetailStream = codeDetailStream.sorted(Comparator.comparing(CodeDetail::getOrder));
 
-        List<Map<String, Object>> resultList = codeDetailJinqStream.map(x -> new HashMap<String, Object>() {{
+        List<Map<String, Object>> resultList = codeDetailStream.map(x -> new HashMap<String, Object>() {{
             put("key", x.getKey());
             put("orgKey", x.getKey());
             put("value", x.getValue());
@@ -130,18 +140,22 @@ public class CommonCodeService {
      * @return Map(자바클래스)
      */
     public Map<String,Object> getGroupDetail(CodeGroup codeGroup) {
-        JinqStream<CodeGroup> streams = jinqSource.streamAllPortal(CodeGroup.class);
+//        JinqStream<CodeGroup> streams = jinqSource.streamAllPortal(CodeGroup.class);
+        Stream<CodeGroup> streams = codeGroupRepository.findAll().stream();
         String id = codeGroup.getId();
         String searchKeyword = codeGroup.getSearchKeyword();
 
         if (null != id && !"".equals(id) && !"null".equals(id.toLowerCase())) {
-            streams = streams.where(c -> c.getId().equals(id));
+//            streams = streams.where(c -> c.getId().equals(id));
+            streams = streams.filter(code -> id.equals(code.getId()));
         }
         if (null != searchKeyword && !"".equals(searchKeyword)) {
-            streams = streams.where(c -> c.getName().contains(searchKeyword) || c.getId().contains(searchKeyword));
+//            streams = streams.where(c -> c.getName().contains(searchKeyword) || c.getId().contains(searchKeyword));
+            streams = streams.filter(code -> code.getName().contains(searchKeyword) || code.getId().contains(searchKeyword));
         }
 
-        streams = streams.sortedBy(c -> c.getCreated());
+//        streams = streams.sortedBy(c -> c.getCreated());
+        streams = streams.sorted(Comparator.comparing(CodeGroup::getCreated));
 
         List<Map<String, Object>> resultList = streams.map(x -> new HashMap<String, Object>() {{
             put("id", x.getId());
