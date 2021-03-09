@@ -12,7 +12,13 @@ server:
 
 datasource:
   hikari:
-    maximum-pool-size: 50
+    minimumIdle: 50
+    idleTimeout: 10000
+    connectionTimeout: 30000
+    validationTimeout: 5000
+    maxLifetime: 1000
+    maximumPoolSize: 50
+    autoCommit: true
   cc:
     driver-class-name: com.mysql.cj.jdbc.Driver
     jdbc-url: jdbc:mysql://XXX.XXX.XXX.XXX:3306/cloud_controller
@@ -29,7 +35,7 @@ datasource:
     username: uaaadmin # YOUR UAA DB ACCOUNT
     password: 'PASSWORD' # YOUR UAA DB PASSWORD
 jpa:
-  database: postgresql
+  database: mysql
   show-sql: true
   hibernate:
     ddl-auto: none
