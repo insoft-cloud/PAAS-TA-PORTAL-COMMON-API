@@ -76,7 +76,7 @@ dependencies {
 
     //DB
     compile ('org.springframework.boot:spring-boot-starter-jdbc')
-    compile ('commons-dbcp:commons-dbcp:1.4')
+    //compile ('commons-dbcp:commons-dbcp:1.4')
     compile ("mysql:mysql-connector-java:${mysqlConnectorVersion}")
     compile ("javax.servlet:javax.servlet-api:${javaServletVersion}")
     compile ('org.postgresql:postgresql')

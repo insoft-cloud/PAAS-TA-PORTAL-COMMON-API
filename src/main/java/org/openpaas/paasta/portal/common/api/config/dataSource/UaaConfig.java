@@ -1,5 +1,6 @@
 package org.openpaas.paasta.portal.common.api.config.dataSource;
 
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import javax.sql.DataSource;
 import java.util.HashMap;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -28,7 +30,11 @@ public class UaaConfig {
 
     private static final Logger logger = getLogger(UaaConfig.class);
 
-    @Value("${datasource.hikari.maximum-pool-size}") int maximumPoolSize;
+//    @Value("${datasource.hikari.idle-timeout}") int idleTimeout;
+    @Value("${datasource.hikari.connectionTimeout}") int connectionTimeout;
+    @Value("${datasource.hikari.validationTimeout}") int validationTimeout;
+    @Value("${datasource.hikari.maxLifetime}") int maxLifetime;
+    @Value("${datasource.hikari.maximumPoolSize}") int maximumPoolSize;
     @Value("${datasource.uaa.driver-class-name}") String uaaDriverClassName;
     @Value("${datasource.uaa.jdbc-url}") String uaaUrl;
     @Value("${datasource.uaa.username}") String uaaUsername;
@@ -71,15 +77,19 @@ public class UaaConfig {
     }
 
     @Bean
-    public HikariDataSource uaaDataSource() {
-        HikariDataSource hikariDataSource = new HikariDataSource();
-        hikariDataSource.setMaximumPoolSize(maximumPoolSize);
-        hikariDataSource.setDriverClassName(uaaDriverClassName);
-        hikariDataSource.setJdbcUrl(uaaUrl);
-        hikariDataSource.setUsername(uaaUsername);
-        hikariDataSource.setPassword(uaaPassword);
+    public DataSource uaaDataSource() {
+        HikariConfig config = new HikariConfig();
 
-        return hikariDataSource;
+        config.setConnectionTimeout(connectionTimeout);
+//        config.setValidationTimeout(validationTimeout);
+        config.setMaxLifetime(maxLifetime);
+        config.setMaximumPoolSize(maximumPoolSize);
+        config.setDriverClassName(uaaDriverClassName);
+        config.setJdbcUrl(uaaUrl);
+        config.setUsername(uaaUsername);
+        config.setPassword(uaaPassword);
+
+        return new HikariDataSource(config);
     }
 
     @Bean

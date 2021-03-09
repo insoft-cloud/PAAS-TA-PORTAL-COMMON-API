@@ -1,5 +1,6 @@
 package org.openpaas.paasta.portal.common.api.config.dataSource;
 
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import javax.sql.DataSource;
 import java.util.HashMap;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -28,7 +30,11 @@ public class CcConfig {
 
     private static final Logger logger = getLogger(CcConfig.class);
 
-    @Value("${datasource.hikari.maximum-pool-size}") int maximumPoolSize;
+//    @Value("${datasource.hikari.idle-timeout}") int idleTimeout;
+    @Value("${datasource.hikari.connectionTimeout}") int connectionTimeout;
+    @Value("${datasource.hikari.validationTimeout}") int validationTimeout;
+    @Value("${datasource.hikari.maxLifetime}") int maxLifetime;
+    @Value("${datasource.hikari.maximumPoolSize}") int maximumPoolSize;
     @Value("${datasource.cc.driver-class-name}") String ccDriverClassName;
     @Value("${datasource.cc.jdbc-url}") String ccUrl;
     @Value("${datasource.cc.username}") String ccUsername;
@@ -70,15 +76,18 @@ public class CcConfig {
     }
 
     @Bean
-    public HikariDataSource ccDataSource() {
-        HikariDataSource hikariDataSource = new HikariDataSource();
-        hikariDataSource.setMaximumPoolSize(maximumPoolSize);
-        hikariDataSource.setDriverClassName(ccDriverClassName);
-        hikariDataSource.setJdbcUrl(ccUrl);
-        hikariDataSource.setUsername(ccUsername);
-        hikariDataSource.setPassword(ccPassword);
+    public DataSource ccDataSource() {
+        HikariConfig config = new HikariConfig();
 
-        return hikariDataSource;
+        config.setConnectionTimeout(connectionTimeout);
+        config.setMaxLifetime(maxLifetime);
+        config.setMaximumPoolSize(maximumPoolSize);
+        config.setDriverClassName(ccDriverClassName);
+        config.setJdbcUrl(ccUrl);
+        config.setUsername(ccUsername);
+        config.setPassword(ccPassword);
+
+        return new HikariDataSource(config);
     }
 
     @Bean

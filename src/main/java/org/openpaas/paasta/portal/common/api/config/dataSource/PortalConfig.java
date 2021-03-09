@@ -1,5 +1,6 @@
 package org.openpaas.paasta.portal.common.api.config.dataSource;
 
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import javax.sql.DataSource;
 import java.util.HashMap;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -29,7 +31,13 @@ public class PortalConfig {
 
     private static final Logger logger = getLogger(PortalConfig.class);
 
-    @Value("${datasource.hikari.maximum-pool-size}") int maximumPoolSize;
+    @Value("${datasource.hikari.idle-timeout}") int idleTimeout;
+    @Value("${datasource.hikari.connectionTimeout}") int connectionTimeout;
+    @Value("${datasource.hikari.validationTimeout}") int validationTimeout;
+    @Value("${datasource.hikari.maxLifetime}") int maxLifetime;
+    @Value("${datasource.hikari.minimumIdle}") int minimumIdle;
+    @Value("${datasource.hikari.maximumPoolSize}") int maximumPoolSize;
+    @Value("${datasource.hikari.autoCommit}") boolean autoCommit;
     @Value("${datasource.portal.driver-class-name}") String portalDriverClassName;
     @Value("${datasource.portal.jdbc-url}") String portalUrl;
     @Value("${datasource.portal.username}") String portalUsername;
@@ -74,15 +82,22 @@ public class PortalConfig {
 
     @Primary
     @Bean
-    public HikariDataSource portalDataSource() {
-        HikariDataSource hikariDataSource = new HikariDataSource();
-        hikariDataSource.setMaximumPoolSize(maximumPoolSize);
-        hikariDataSource.setDriverClassName(portalDriverClassName);
-        hikariDataSource.setJdbcUrl(portalUrl);
-        hikariDataSource.setUsername(portalUsername);
-        hikariDataSource.setPassword(portalPassword);
+    public DataSource portalDataSource() {
+        HikariConfig config = new HikariConfig();
 
-        return hikariDataSource;
+        config.setMinimumIdle(minimumIdle);
+        config.setIdleTimeout(idleTimeout);
+        config.setConnectionTimeout(connectionTimeout);
+        config.setValidationTimeout(validationTimeout);
+        config.setMaxLifetime(maxLifetime);
+        config.setMaximumPoolSize(maximumPoolSize);
+        config.setAutoCommit(autoCommit);
+        config.setDriverClassName(portalDriverClassName);
+        config.setJdbcUrl(portalUrl);
+        config.setUsername(portalUsername);
+        config.setPassword(portalPassword);
+
+        return new HikariDataSource(config);
     }
 
     @Primary

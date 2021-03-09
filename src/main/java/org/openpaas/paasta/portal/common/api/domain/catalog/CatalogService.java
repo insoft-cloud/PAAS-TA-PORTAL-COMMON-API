@@ -1,7 +1,6 @@
 package org.openpaas.paasta.portal.common.api.domain.catalog;
 
 
-import org.jinq.orm.stream.JinqStream;
 import org.openpaas.paasta.portal.common.api.config.Constants;
 import org.openpaas.paasta.portal.common.api.config.JinqSource;
 import org.openpaas.paasta.portal.common.api.entity.cc.CatalogCc;
@@ -13,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -93,20 +94,24 @@ public class CatalogService {
      */
     public Map<String, Object> getStarterNamesList(StarterCategory param) {
         logger.info("getStarterNamesList :: " + param.toString());
-        JinqStream<StarterCategory> streams = jinqSource.streamAllPortal(StarterCategory.class);
+        //JinqStream<StarterCategory> streams = jinqSource.streamAllPortal(StarterCategory.class);
+        Stream<StarterCategory> streams = starterCategoryRepository.findAll().stream();
 
         int no = param.getNo();
         String searchKeyword = param.getSearchKeyword();
 
         if (null != searchKeyword && !"".equals(searchKeyword)) {
-            streams = streams.where(c -> c.getName().contains(searchKeyword) || c.getDescription().contains(searchKeyword) || c.getSummary().contains(searchKeyword));
+            //streams = streams.where(c -> c.getName().contains(searchKeyword) || c.getDescription().contains(searchKeyword) || c.getSummary().contains(searchKeyword));
+            streams = streams.filter(c -> c.getName().contains(searchKeyword) || c.getDescription().contains(searchKeyword) || c.getSummary().contains(searchKeyword));
         }
 
-        streams = streams.sortedDescendingBy(c -> c.getNo());
-        List<StarterCategory> starterCategoryList = streams.toList();
-
+        //streams = streams.sortedDescendingBy(c -> c.getNo());
+        streams = streams.sorted(Comparator.comparing(StarterCategory::getNo).reversed());
+        //List<StarterCategory> starterCategoryList = streams.toList();
+        List<StarterCategory> starterCategoryList2 = streams.collect(Collectors.toList());
         return new HashMap<String, Object>() {{
-            put("list", starterCategoryList);
+            put("list", starterCategoryList2);
+            //put("list", starterCategoryList);
         }};
 
     }
@@ -118,12 +123,15 @@ public class CatalogService {
      * @return Map(자바클래스)
      */
     public Map<String, Object> getStarterList(String use) {
-        JinqStream<StarterCategory> streams = jinqSource.streamAllPortal(StarterCategory.class);
+        //JinqStream<StarterCategory> streams = jinqSource.streamAllPortal(StarterCategory.class);
+        Stream<StarterCategory> streams = starterCategoryRepository.findAll().stream();
         if (null != use && !"".equals(use)) {
-            streams = streams.where(c -> c.getUseYn().equals(use));
+            //streams = streams.where(c -> c.getUseYn().equals(use));
+            streams = streams.filter(c -> c.getUseYn().equals(use));
         }
-        streams = streams.sortedDescendingBy(c -> c.getNo());
-        List<StarterCategory> starterCategoryList = streams.toList();
+        //streams = streams.sortedDescendingBy(c -> c.getNo());
+        streams = streams.sorted(Comparator.comparing(StarterCategory::getNo));
+        List<StarterCategory> starterCategoryList = streams.collect(Collectors.toList());
         return new HashMap<String, Object>() {{
             put("list", starterCategoryList);
         }};
@@ -137,21 +145,24 @@ public class CatalogService {
      */
     public Map<String, Object> getBuildPackCatalogList(BuildpackCategory param) {
         logger.info("getBuildPackCatalogList :: " + param.toString());
-        JinqStream<BuildpackCategory> streams = jinqSource.streamAllPortal(BuildpackCategory.class);
+        //JinqStream<BuildpackCategory> streams = jinqSource.streamAllPortal(BuildpackCategory.class);
+        Stream<BuildpackCategory> streams = buildpackCategoryRepository.findAll().stream();
 
         int no = param.getNo();
         String searchKeyword = param.getSearchKeyword();
 
         if (null != searchKeyword && !"".equals(searchKeyword)) {
-            streams = streams.where(c -> c.getName().contains(searchKeyword) || c.getDescription().contains(searchKeyword) || c.getSummary().contains(searchKeyword));
+            streams = streams.filter(c -> c.getName().contains(searchKeyword) || c.getDescription().contains(searchKeyword) || c.getSummary().contains(searchKeyword));
         }
 
         if (no != 0) {
-            streams = streams.where(c -> c.getNo() == no);
+            streams = streams.filter(c -> c.getNo() == no);
         }
 
-        streams = streams.sortedDescendingBy(c -> c.getNo());
-        List<BuildpackCategory> buildpackCategoryList = streams.toList();
+        //streams = streams.sortedDescendingBy(c -> c.getNo());
+        streams = streams.sorted(Comparator.comparing(BuildpackCategory::getNo).reversed());
+        //List<BuildpackCategory> buildpackCategoryList = streams.toList();
+        List<BuildpackCategory> buildpackCategoryList = streams.collect(Collectors.toList());
         return new HashMap<String, Object>() {{
             put("list", buildpackCategoryList);
         }};
@@ -164,12 +175,15 @@ public class CatalogService {
      * @return Map(자바클래스)
      */
     public Map<String, Object> getBuildPackList(String use) {
-        JinqStream<BuildpackCategory> streams = jinqSource.streamAllPortal(BuildpackCategory.class);
+        //JinqStream<BuildpackCategory> streams = jinqSource.streamAllPortal(BuildpackCategory.class);
+        Stream<BuildpackCategory> streams = buildpackCategoryRepository.findAll().stream();
         if (null != use && !"".equals(use)) {
-            streams = streams.where(c -> c.getUseYn().equals(use));
+            //streams = streams.where(c -> c.getUseYn().equals(use));
+            streams = streams.filter(c -> c.getUseYn().equals(use));
         }
-        streams = streams.sortedDescendingBy(c -> c.getNo());
-        List<BuildpackCategory> starterCategoryList = streams.toList();
+        //streams = streams.sortedDescendingBy(c -> c.getNo());
+        streams = streams.sorted(Comparator.comparing(BuildpackCategory::getNo).reversed());
+        List<BuildpackCategory> starterCategoryList = streams.collect(Collectors.toList());
         return new HashMap<String, Object>() {{
             put("list", starterCategoryList);
         }};
@@ -177,17 +191,23 @@ public class CatalogService {
 
     public Map<String, Object> getPacks(String searchKeyword) {
 
-        JinqStream<StarterCategory> streams = jinqSource.streamAllPortal(StarterCategory.class);
-        JinqStream<BuildpackCategory> streams2 = jinqSource.streamAllPortal(BuildpackCategory.class);
+        //JinqStream<StarterCategory> streams = jinqSource.streamAllPortal(StarterCategory.class);
+        Stream<StarterCategory> streams = starterCategoryRepository.findAll().stream();
+        //JinqStream<BuildpackCategory> streams2 = jinqSource.streamAllPortal(BuildpackCategory.class);
+        Stream<BuildpackCategory> streams2 = buildpackCategoryRepository.findAll().stream();
         if (null != searchKeyword && !"".equals(searchKeyword)) {
-            streams = streams.where(c -> c.getName().contains(searchKeyword) || c.getDescription().contains(searchKeyword) || c.getSummary().contains(searchKeyword));
-            streams2 = streams2.where(c -> c.getName().contains(searchKeyword) || c.getDescription().contains(searchKeyword) || c.getSummary().contains(searchKeyword));
+            //streams = streams.where(c -> c.getName().contains(searchKeyword) || c.getDescription().contains(searchKeyword) || c.getSummary().contains(searchKeyword));
+            streams = streams.filter(c -> c.getName().contains(searchKeyword) || c.getDescription().contains(searchKeyword) || c.getSummary().contains(searchKeyword));
+            //streams2 = streams2.where(c -> c.getName().contains(searchKeyword) || c.getDescription().contains(searchKeyword) || c.getSummary().contains(searchKeyword));
+            streams2 = streams2.filter(c -> c.getName().contains(searchKeyword) || c.getDescription().contains(searchKeyword) || c.getSummary().contains(searchKeyword));
         }
 
-        streams = streams.sortedDescendingBy(c -> c.getNo());
-        streams2 = streams2.sortedDescendingBy(c -> c.getNo());
-        List<StarterCategory> starterCategoryList = streams.toList();
-        List<BuildpackCategory> buildpackCategoryList = streams2.toList();
+        //streams = streams.sortedDescendingBy(c -> c.getNo());
+        streams = streams.sorted(Comparator.comparing(StarterCategory::getNo).reversed());
+        //streams2 = streams2.sortedDescendingBy(c -> c.getNo());
+        streams2 = streams2.sorted(Comparator.comparing(BuildpackCategory::getNo).reversed());
+        List<StarterCategory> starterCategoryList = streams.collect(Collectors.toList());
+        List<BuildpackCategory> buildpackCategoryList = streams2.collect(Collectors.toList());
         return new HashMap<String, Object>() {{
             put("TemplateList", starterCategoryList);
             put("BuildPackList", buildpackCategoryList);
@@ -201,13 +221,16 @@ public class CatalogService {
      * @return Map(자바클래스)
      */
     public Map<String, Object> getServicePackList(String use) {
-        JinqStream<ServicepackCategory> streams = jinqSource.streamAllPortal(ServicepackCategory.class);
+        //JinqStream<ServicepackCategory> streams = jinqSource.streamAllPortal(ServicepackCategory.class);
+        Stream<ServicepackCategory> streams = servicepackCategoryRepository.findAll().stream();
         logger.info(use);
         if (null != use && !"".equals(use)) {
-            streams = streams.where(c -> c.getUseYn().equals(use));
+            //streams = streams.where(c -> c.getUseYn().equals(use));
+            streams = streams.filter(c -> c.getUseYn().equals(use));
         }
-        streams = streams.sortedDescendingBy(c -> c.getNo());
-        List<ServicepackCategory> starterCategoryList = streams.toList();
+        //streams = streams.sortedDescendingBy(c -> c.getNo());
+        streams = streams.sorted(Comparator.comparing(ServicepackCategory::getNo).reversed());
+        List<ServicepackCategory> starterCategoryList = streams.collect(Collectors.toList());
         return new HashMap<String, Object>() {{
             put("list", starterCategoryList);
         }};
@@ -222,19 +245,24 @@ public class CatalogService {
      */
     public Map<String, Object> getServicePackCatalogList(ServicepackCategory param) {
         logger.info("getServicePackCatalogList :: " + param.toString());
-        JinqStream<ServicepackCategory> streams = jinqSource.streamAllPortal(ServicepackCategory.class);
+        //JinqStream<ServicepackCategory> streams = jinqSource.streamAllPortal(ServicepackCategory.class);
+        Stream<ServicepackCategory> streams = servicepackCategoryRepository.findAll().stream();
         int no = param.getNo();
         String searchKeyword = param.getSearchKeyword();
         if (null != searchKeyword && !"".equals(searchKeyword)) {
-            streams = streams.where(c -> c.getName().contains(searchKeyword) || c.getDescription().contains(searchKeyword) || c.getSummary().contains(searchKeyword));
+            //streams = streams.where(c -> c.getName().contains(searchKeyword) || c.getDescription().contains(searchKeyword) || c.getSummary().contains(searchKeyword));
+            streams = streams.filter(c -> c.getName().contains(searchKeyword) || c.getDescription().contains(searchKeyword) || c.getSummary().contains(searchKeyword));
         }
 
         if (no != 0) {
-            streams = streams.where(c -> c.getNo() == no);
+            //streams = streams.where(c -> c.getNo() == no);
+            streams = streams.filter(c -> c.getNo() == no);
         }
 
-        streams = streams.sortedDescendingBy(c -> c.getNo());
-        List<ServicepackCategory> servicePackCatalogList = streams.toList();
+        //streams = streams.sortedDescendingBy(c -> c.getNo());
+        streams = streams.sorted(Comparator.comparing(ServicepackCategory::getNo).reversed());
+        //List<ServicepackCategory> servicePackCatalogList = streams.toList();
+        List<ServicepackCategory> servicePackCatalogList = streams.collect(Collectors.toList());
 
         return new HashMap<String, Object>() {{
             put("list", servicePackCatalogList);
@@ -249,15 +277,18 @@ public class CatalogService {
      */
     public int getStarterCatalogCount(StarterCategory param) {
         logger.info("getStarterCatalogCount :: " + param.toString());
-        JinqStream<StarterCategory> streams = jinqSource.streamAllPortal(StarterCategory.class);
+        //JinqStream<StarterCategory> streams = jinqSource.streamAllPortal(StarterCategory.class);
+        Stream<StarterCategory> streams = starterCategoryRepository.findAll().stream();
 
         int startPackCnt = 0;
         String name = param.getName();
 
         if (null != name && !"".equals(name)) {
-            streams = streams.where(c -> c.getName().equals(name));
-            streams = streams.sortedDescendingBy(c -> c.getNo());
-            List<StarterCategory> starterCategoryList = streams.toList();
+            //streams = streams.where(c -> c.getName().equals(name));
+            streams = streams.filter(c -> c.getName().equals(name));
+            //streams = streams.sortedDescendingBy(c -> c.getNo());
+            streams = streams.sorted(Comparator.comparing(StarterCategory::getNo).reversed());
+            List<StarterCategory> starterCategoryList = streams.collect(Collectors.toList());
             startPackCnt = starterCategoryList.size();
         }
         return startPackCnt;
@@ -271,15 +302,18 @@ public class CatalogService {
      */
     public int getBuildPackCatalogCount(BuildpackCategory param) {
         logger.info("getBuildPackCatalogCount :: " + param.toString());
-        JinqStream<BuildpackCategory> streams = jinqSource.streamAllPortal(BuildpackCategory.class);
+        //JinqStream<BuildpackCategory> streams = jinqSource.streamAllPortal(BuildpackCategory.class);
+        Stream<BuildpackCategory> streams = buildpackCategoryRepository.findAll().stream();
 
         int buildPackCnt = 0;
         String name = param.getName();
 
         if (null != name && !"".equals(name)) {
-            streams = streams.where(c -> c.getName().equals(name));
-            streams = streams.sortedDescendingBy(c -> c.getNo());
-            List<BuildpackCategory> buildpackCategoryList = streams.toList();
+            //streams = streams.where(c -> c.getName().equals(name));
+            streams = streams.filter(c -> c.getName().equals(name));
+            //streams = streams.sortedDescendingBy(c -> c.getNo());
+            streams = streams.sorted(Comparator.comparing(BuildpackCategory::getNo).reversed());
+            List<BuildpackCategory> buildpackCategoryList = streams.collect(Collectors.toList());
             buildPackCnt = buildpackCategoryList.size();
         }
 
@@ -295,15 +329,18 @@ public class CatalogService {
      */
     public int getServicePackCatalogCount(ServicepackCategory param) {
         logger.info("getServicePackCatalogCount :: " + param.toString());
-        JinqStream<ServicepackCategory> streams = jinqSource.streamAllPortal(ServicepackCategory.class);
+        //JinqStream<ServicepackCategory> streams = jinqSource.streamAllPortal(ServicepackCategory.class);
+        Stream<ServicepackCategory> streams = servicepackCategoryRepository.findAll().stream();
 
         int servicePackCnt = 0;
         String name = param.getName();
 
         if (null != name && !"".equals(name)) {
-            streams = streams.where(c -> c.getName().equals(name));
-            streams = streams.sortedDescendingBy(c -> c.getNo());
-            List<ServicepackCategory> servicepackCategoryList = streams.toList();
+            //streams = streams.where(c -> c.getName().equals(name));
+            streams = streams.filter(c -> c.getName().equals(name));
+            //streams = streams.sortedDescendingBy(c -> c.getNo());
+            streams = streams.sorted(Comparator.comparing(ServicepackCategory::getNo).reversed());
+            List<ServicepackCategory> servicepackCategoryList = streams.collect(Collectors.toList());
             servicePackCnt = servicepackCategoryList.size();
         }
 
@@ -612,9 +649,12 @@ public class CatalogService {
     public Map<String, Object> getStarterRelation(int no) {
         StarterCategory starterCategory = starterCategoryRepository.findByNo(no);
         List<ServicepackCategory> servicepackCategories = new ArrayList<>();
-        JinqStream<StarterServicepackRelation> streams = jinqSource.streamAllPortal(StarterServicepackRelation.class);
-        streams = streams.where(c -> c.getStarterCatalogNo() == no);
-        List<Integer> integerlist = streams.select(c -> c.getServicepackCategoryNo()).distinct().toList();
+        //JinqStream<StarterServicepackRelation> streams = jinqSource.streamAllPortal(StarterServicepackRelation.class);
+        Stream<StarterServicepackRelation> streams = starterServicePackRelationRepository.findAll().stream();
+        //streams = streams.where(c -> c.getStarterCatalogNo() == no);
+        streams = streams.filter(c -> c.getStarterCatalogNo() == no);
+        //List<Integer> integerlist = streams.select(c -> c.getServicepackCategoryNo()).distinct().toList();
+        List<Integer> integerlist = streams.map(StarterServicepackRelation::getServicepackCategoryNo).collect(Collectors.toList());
         for (Integer number : integerlist) {
             ServicepackCategory servicepackCategory = servicepackCategoryRepository.findByNo(number);
             if (servicepackCategory != null) {
