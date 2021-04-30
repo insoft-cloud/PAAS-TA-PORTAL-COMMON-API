@@ -269,6 +269,7 @@ public class UserService {
     }
 
 
+    /*테스트용 임시 추가*/
     public int updateInfoUser(String userId, UserDetail userDetail) {
 
         int resultCnt = userDetailRepository.countByUserId(userId);
@@ -279,6 +280,7 @@ public class UserService {
         return resultCnt;
     }
 }
+
 
 
 

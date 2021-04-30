@@ -302,6 +302,7 @@ public class UserController {
         user.toString();
         int cnt = userService.updateUser(userId, user);
         result.put("result", cnt);
+
         }
         return result;
       }
