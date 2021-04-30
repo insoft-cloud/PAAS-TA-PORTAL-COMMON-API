@@ -3,6 +3,7 @@ package org.openpaas.paasta.portal.common.api.domain.user;
 
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.openpaas.paasta.portal.common.api.config.Constants;
 import org.openpaas.paasta.portal.common.api.config.JinqSource;
 import org.openpaas.paasta.portal.common.api.config.dataSource.PortalConfig;
 import org.openpaas.paasta.portal.common.api.config.dataSource.UaaConfig;
@@ -68,7 +69,7 @@ public class UserService {
      * @return UserDetail user
      */
     public UserDetail getUser(String userId) {
-        return  userDetailRepository.findByUserId(userId);
+        return userDetailRepository.findByUserId(userId);
     }
 
     public Users getUaaUser(String username) {
@@ -265,6 +266,17 @@ public class UserService {
         }}).collect(Collectors.toList());
 
         return userInfo;
+    }
+
+
+    public int updateInfoUser(String userId, UserDetail userDetail) {
+
+        int resultCnt = userDetailRepository.countByUserId(userId);
+        if (resultCnt > 0) {
+            userDetailRepository.save(userDetail);
+
+        }
+        return resultCnt;
     }
 }
 
