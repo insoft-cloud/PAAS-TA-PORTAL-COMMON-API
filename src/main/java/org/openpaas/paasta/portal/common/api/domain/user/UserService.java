@@ -228,7 +228,6 @@ public class UserService {
 
     }
 
-
     /**
      * 전체 UAA 유저의 userName과 userGuid를 가져온다.
      *
@@ -268,14 +267,16 @@ public class UserService {
         return userInfo;
     }
 
+    /**
+     * UAA 유저의 정보를 수정한다.
+     *
+     * @return All Users List( GUID, userName )
+     */
+    public int uaaUser(String username, Users users) {
 
-    /*테스트용 임시 추가*/
-    public int updateInfoUser(String userId, UserDetail userDetail) {
-
-        int resultCnt = userDetailRepository.countByUserId(userId);
+        int resultCnt = usersRepository.countByUserName(username);
         if (resultCnt > 0) {
-            userDetailRepository.save(userDetail);
-
+            usersRepository.save(users);
         }
         return resultCnt;
     }

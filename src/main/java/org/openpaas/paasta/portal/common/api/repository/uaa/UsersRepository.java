@@ -11,6 +11,9 @@ package org.openpaas.paasta.portal.common.api.repository.uaa;
 public interface UsersRepository extends JpaRepository<Users, Integer> {
 
     Users findById(String guid);
+
     Users findByUserName(String username);
+
+    int countByUserName(String username);
 
 }

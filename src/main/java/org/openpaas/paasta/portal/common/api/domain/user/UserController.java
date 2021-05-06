@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigInteger;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,9 +51,8 @@ public class UserController {
     public Map getUser(@PathVariable String userId) {
         LOGGER.info("> into getUser...");
         UserDetail user = userService.getUser(userId);
-        if(user != null){
-            if(user.getUserName() == null)
-            {
+        if (user != null) {
+            if (user.getUserName() == null) {
                 user = null;
             }
         }
@@ -91,7 +92,7 @@ public class UserController {
             if (body.containsKey("tellPhone")) user.setTellPhone((String) body.get("tellPhone"));
             if (body.containsKey("zipCode")) user.setZipCode((String) body.get("zipCode"));
             if (body.containsKey("adminYn")) user.setAdminYn((String) body.get("adminYn"));
-            if (body.containsKey("active")) user.setActive((String)body.get("active"));
+            if (body.containsKey("active")) user.setActive((String) body.get("active"));
             if (body.containsKey("refreshToken")) user.setRefreshToken((String) body.get("refreshToken"));
 //            if (body.containsKey("authAccessTime")) (user.setAuthAccessTime(new Date(Long.parseLong(body.get("refreshToken").toString()));
             if (body.containsKey("authAccessCnt")) user.setAuthAccessCnt((int) body.get("authAccessCnt"));
@@ -138,7 +139,7 @@ public class UserController {
     /**
      * Login Insert user
      *
-     * @param username     the username
+     * @param username the username
      * @param response the response
      * @return boolean boolean
      * @throws Exception the exception
@@ -147,11 +148,6 @@ public class UserController {
     public Users isExistUser(@PathVariable String username, HttpServletResponse response) throws Exception {
         return userService.getUaaUser(username);
     }
-
-
-
-
-
 
     /**
      * Delete user map.
@@ -162,7 +158,7 @@ public class UserController {
      * @throws Exception the exception
      */
     @DeleteMapping(V2_URL + "/user/{userId:.+}")
-    public Map deleteUser(@PathVariable String userId,HttpServletResponse response) throws Exception {
+    public Map deleteUser(@PathVariable String userId, HttpServletResponse response) throws Exception {
         LOGGER.info("> into deleteUser :: " + userId);
 
         Map<String, Object> result = userService.deleteUser(userId);
@@ -242,17 +238,16 @@ public class UserController {
 
     /**
      * Gets user.
-     * 임시 추가 
+     * 사용자의 상세 정보(portal)를 가져온다.
      * @param userId the user id
      * @return Map user
      */
     @GetMapping(V2_URL + "/user/{userId}")
     public Map getUserInfo(@PathVariable String userId) {
-        LOGGER.info( userId +"의 정보를 가져온다");
+        LOGGER.info(userId + "의 정보를 가져온다");
         UserDetail user = userService.getUser(userId);
-        if(user != null){
-            if(user.getUserName() == null)
-            {
+        if (user != null) {
+            if (user.getUserName() == null) {
                 user = null;
             }
         }
@@ -262,50 +257,61 @@ public class UserController {
     }
 
     /**
-     * Update user map.
-     *
-     * @param userId   the user id
+     * UAA 유저의 상세 정보를 수정한다.
+     * @param username   the username
      * @param body     the body
      * @param response the response
      * @return Map { "result": updateCount}
      * @throws Exception the exception
      */
-    @PutMapping(V2_URL + "/user/{userid}")
-    public Map updateUserInfo(@PathVariable String userId, @RequestBody Map<String, Object> body, HttpServletResponse response) throws Exception {
+    @PutMapping(V2_URL + "/user/{username}")
+    public Map updateUserInfo(@PathVariable String username, @RequestBody Map<String, Object> body, HttpServletResponse response) throws Exception {
 
-    LOGGER.info("> into updateUser...");
+        LOGGER.info("> into updateUser...");
 
-    UserDetail user = null;
-    Map<String, Object> result = new HashMap<>();
+        Users users = null;
+        Map<String, Object> result = new HashMap<>();
 
-    user = userService.getUser(userId);
+        users = userService.getUaaUser(username);
 
-    if (user == null) {
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "User does not exist.");
-    } else {
-
-        if (body.containsKey("userName")) user.setUserName((String) body.get("userName"));
-        if (body.containsKey("status")) user.setStatus((String) body.get("status"));
-        if (body.containsKey("addressDetail")) user.setAddressDetail((String) body.get("addressDetail"));
-        if (body.containsKey("address")) user.setAddress((String) body.get("address"));
-        if (body.containsKey("tellPhone")) user.setTellPhone((String) body.get("tellPhone"));
-        if (body.containsKey("zipCode")) user.setZipCode((String) body.get("zipCode"));
-        if (body.containsKey("adminYn")) user.setAdminYn((String) body.get("adminYn"));
-        if (body.containsKey("active")) user.setActive((String)body.get("active"));
-        if (body.containsKey("refreshToken")) user.setRefreshToken((String) body.get("refreshToken"));
-//            if (body.containsKey("authAccessTime")) (user.setAuthAccessTime(new Date(Long.parseLong(body.get("refreshToken").toString()));
-        if (body.containsKey("authAccessCnt")) user.setAuthAccessCnt((int) body.get("authAccessCnt"));
-        if (body.containsKey("imgPath")) {
-//                if (user.getImgPath() != null) glusterfsService.delete(user.getImgPath());
-            user.setImgPath((String) body.get("imgPath"));
-        }
-        user.toString();
-        int cnt = userService.updateUser(userId, user);
-        result.put("result", cnt);
-
+        if (users == null) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "User does not exist.");
+        } else {
+            if (body.containsKey("id")) users.setId((String) body.get("id"));
+            if (body.containsKey("created")) users.setCreated((Date) body.get("created"));
+            if (body.containsKey("lastmodified")) users.setLastmodified((Date) body.get("lastmodified"));
+            if (body.containsKey("userName")) users.setUserName((String) body.get("userName"));
+            if (body.containsKey("email")) users.setEmail((String) body.get("email"));
+            if (body.containsKey("authorities")) users.setAuthorities((String) body.get("authorities"));
+            if (body.containsKey("givenName")) users.setGivenName((String) body.get("givenName"));
+            if (body.containsKey("familyName")) users.setFamilyName((String) body.get("familyName"));
+            if (body.containsKey("active")) users.setActive((String) body.get("active"));
+            if (body.containsKey("phoneNumber")) users.setPhoneNumber((String) body.get("phoneNumber"));
+            if (body.containsKey("verified")) users.setVerified((String) body.get("verified"));
+            if (body.containsKey("active")) users.setActive((String) body.get("active"));
+            if (body.containsKey("lastLogonSuccessTime")) {
+                users.setLastLogonSuccessTime((BigInteger) body.get("lastLogonSuccessTime"));
+            }
+            users.toString();
+            int cnt = userService.uaaUser(username, users);
+            result.put("result", cnt);
         }
         return result;
-      }
     }
+
+    /**
+     * Gets user uaa.
+     * UAA 사용자의 상세 정보를 가져온다.
+     * @param username the username
+     * @return Map user
+     */
+    @GetMapping(V2_URL + "/user/{username}/uaa")
+    public Users getUaa(@PathVariable String username, HttpServletResponse response) throws Exception {
+        return userService.getUaaUser(username);
+    }
+}
+
+
+
 
 
