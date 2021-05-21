@@ -237,26 +237,6 @@ public class UserController {
     }
 
     /**
-     * Gets user.
-     * 사용자의 상세 정보(portal)를 가져온다.
-     * @param userId the user id
-     * @return Map user
-     */
-    @GetMapping(V2_URL + "/user/{userId}")
-    public Map getUserInfo(@PathVariable String userId) {
-        LOGGER.info(userId + "의 정보를 가져온다");
-        UserDetail user = userService.getUser(userId);
-        if (user != null) {
-            if (user.getUserName() == null) {
-                user = null;
-            }
-        }
-        Map<String, Object> result = new HashMap<>();
-        result.put("User", user);
-        return result;
-    }
-
-    /**
      * UAA 유저의 상세 정보를 수정한다.
      * @param username   the username
      * @param body     the body
@@ -264,7 +244,7 @@ public class UserController {
      * @return Map { "result": updateCount}
      * @throws Exception the exception
      */
-    @PutMapping(V2_URL + "/user/{username}")
+    @PutMapping(V2_URL + "/user/{username}/uaa")
     public Map updateUserInfo(@PathVariable String username, @RequestBody Map<String, Object> body, HttpServletResponse response) throws Exception {
 
         LOGGER.info("> into updateUser...");
@@ -299,16 +279,6 @@ public class UserController {
         return result;
     }
 
-    /**
-     * Gets user uaa.
-     * UAA 사용자의 상세 정보를 가져온다.
-     * @param username the username
-     * @return Map user
-     */
-    @GetMapping(V2_URL + "/user/{username}/uaa")
-    public Users getUaa(@PathVariable String username, HttpServletResponse response) throws Exception {
-        return userService.getUaaUser(username);
-    }
 }
 
 
